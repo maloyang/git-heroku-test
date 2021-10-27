@@ -9,9 +9,16 @@ import requests
 import csv
 import folium
 import geocoder
+import time
 
 #app = Flask(__name__)
 app = Flask(__name__, static_url_path='', static_folder='static')
+
+@app.route('/test')
+def test():
+    the_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    source_ip = request.remote_addr
+    return jsonify({'result':'OK', 'time':the_time, 'source_ip':source_ip})
 
 @app.route("/", methods=['GET'])
 def basic_url():

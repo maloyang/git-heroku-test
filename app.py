@@ -18,7 +18,7 @@ app = Flask(__name__, static_url_path='', static_folder='static')
 def test():
     the_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     source_ip = request.remote_addr
-    return jsonify({'result':'OK', 'time':the_time, 'source_ip':source_ip})
+    return jsonify({'result':'OK', 'time':the_time, 'source_ip':source_ip, 'auto-deploy':'OK'})
 
 @app.route("/", methods=['GET'])
 def basic_url():

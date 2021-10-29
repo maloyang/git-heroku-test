@@ -102,6 +102,7 @@ def start_scheduler():
     scheduler.start()
 
 def run_web():
+    start_scheduler()
     os.system('gunicorn -w 2 app:app')
 
 if __name__ == "__main__":

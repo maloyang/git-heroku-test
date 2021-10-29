@@ -82,10 +82,12 @@ def send_line(msg, token='rpHUQIIMkArQh6EtQpqfjK6hjPN2jjNxh0zDbcFVoD2'):
     
 #- 空污通報
 def job_function2():
-    url = 'http://opendata.epa.gov.tw/ws/Data/AQI/?$format=json'
+    url = 'https://data.epa.gov.tw/api/v1/aqx_p_432?format=json&api_key=9be7b239-557b-4c10-9775-78cadfc555e9'
     r = requests.get(url)
+    print(r)
     data = r.json()
-    for item in data:
+    records = data['records']
+    for item in records:
         if item['County']=='高雄市' and item['SiteName']=='鳳山':
             send_line('%s>> AQI=%s' %(item['SiteName'], item['AQI']))
 
@@ -96,13 +98,13 @@ def start_scheduler():
     #scheduler.add_job(job_wakeup, 'cron', minute='*/10')
 
     # 每天早上6:30執行
-    scheduler.add_job(job_function2, 'cron', hour='0', minute='*/1')
+    #scheduler.add_job(job_function2, 'cron', hour='6', minute='30')
+    scheduler.add_job(job_function2, 'cron', minute='*/1')
 
     # start the scheduler
     scheduler.start()
 
 def run_web():
-    start_scheduler()
     os.system('gunicorn -w 2 app:app')
 
 if __name__ == "__main__":

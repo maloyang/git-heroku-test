@@ -16,6 +16,9 @@ import geocoder
 from apscheduler.schedulers.background import BackgroundScheduler
 import os
 
+from sqlalchemy import create_engine
+import time
+
 app = Flask(__name__, static_url_path='', static_folder='static')
 
 @app.route("/", methods=['GET'])
@@ -93,15 +96,52 @@ def job_function2():
         if item['County']=='高雄市' and item['SiteName']=='鳳山':
             send_line('%s>> AQI=%s' %(item['SiteName'], item['AQI']))
 
+#- 空污資料收集
+def job_function3():
+    mysql_db_url = 'mysql+pymysql://user1:ji3g4user1@206.189.86.205:32769/testdb'
+    my_db = create_engine(mysql_db_url)
+
+    # check and create table
+    resultProxy = my_db.execute("CREATE TABLE IF NOT EXISTS malo_1030_aqi_table(uuid text NOT NULL, time text NOT NULL, aqi text, pm25 text)")
+
+    # get data
+    url = 'https://data.epa.gov.tw/api/v1/aqx_p_432?format=json&api_key=9be7b239-557b-4c10-9775-78cadfc555e9'
+    r = requests.get(url)
+    data = r.json()
+    records = data['records']
+    uuid = ''
+    my_time = ''
+    aqi = ''
+    pm25 = ''
+    for item in records:
+        if item['County']=='高雄市':
+            uuid = item['SiteName']
+            my_time = item['PublishTime']
+            aqi = item['AQI']
+            pm25 = item['PM2.5']
+
+            # insert
+            resultProxy=my_db.execute("insert into malo_1030_aqi_table (uuid, time, aqi, pm25) values('%s', '%s', '%s', '%s')" %(uuid, my_time, aqi, pm25))
+
+    # get data from db
+    resultProxy=my_db.execute("select * from malo_1030_aqi_table")
+    data = resultProxy.fetchall()
+    print('-- data --')
+    print(data)
+
+
 def start_scheduler():
     scheduler = BackgroundScheduler()
 
     # run every 10 minute
-    #scheduler.add_job(job_wakeup, 'cron', minute='*/10')
+    scheduler.add_job(job_wakeup, 'cron', minute='*/10')
 
     # 每天早上6:30執行
     scheduler.add_job(job_function2, 'cron', hour='6', minute='30')
     #scheduler.add_job(job_function2, 'cron', minute='*/1')
+
+    # 每小時的20分執行
+    scheduler.add_job(job_function3, 'cron', minute='20')
 
     # start the scheduler
     scheduler.start()

@@ -102,7 +102,7 @@ def job_function3():
     my_db = create_engine(mysql_db_url)
 
     # check and create table
-    resultProxy = my_db.execute("CREATE TABLE IF NOT EXISTS malo_1030_aqi_table(uuid text NOT NULL, time text NOT NULL, aqi text, pm25 text)")
+    resultProxy = my_db.execute("CREATE TABLE IF NOT EXISTS malo_1030_aqi_table2(uuid text NOT NULL, time text NOT NULL, aqi text, pm25 text)")
 
     # get data
     url = 'https://data.epa.gov.tw/api/v1/aqx_p_432?format=json&api_key=9be7b239-557b-4c10-9775-78cadfc555e9'
@@ -121,10 +121,10 @@ def job_function3():
             pm25 = item['PM2.5']
 
             # insert
-            resultProxy=my_db.execute("insert into malo_1030_aqi_table (uuid, time, aqi, pm25) values('%s', '%s', '%s', '%s')" %(uuid, my_time, aqi, pm25))
+            resultProxy=my_db.execute("insert into malo_1030_aqi_table2 (uuid, time, aqi, pm25) values('%s', '%s', '%s', '%s')" %(uuid, my_time, aqi, pm25))
 
     # get data from db
-    resultProxy=my_db.execute("select * from malo_1030_aqi_table")
+    resultProxy=my_db.execute("select * from malo_1030_aqi_table2")
     data = resultProxy.fetchall()
     print('-- data --')
     print(data)
@@ -140,7 +140,7 @@ def start_scheduler():
     #scheduler.add_job(job_function2, 'cron', minute='*/1')
 
     # 每小時的20分執行
-    scheduler.add_job(job_function3, 'cron', minute='*/10')
+    scheduler.add_job(job_function3, 'cron', minute='20')
 
     # start the scheduler
     scheduler.start()

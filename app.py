@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+#------------------------
+# v2021-10-30   1. update test
+#========================
 
 from flask import Flask, request, abort, render_template, Response
 from flask import json, jsonify, session, redirect, url_for
@@ -71,7 +74,6 @@ def job_wakeup():
     print(r)
 
 def send_line(msg, token='rpHUQIIMkArQh6EtQpqfjK6hjPN2jjNxh0zDbcFVoD2'):
-    token = 'L61jh7arT6Rwui5PzaVqh8ipbmJATmtETlYrJq5zGFQ'
     url = "https://notify-api.line.me/api/notify"  # --> 不支援http, 只能用https
     headers = {"Authorization" : "Bearer "+ token}
     title = '排程測試'

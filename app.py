@@ -129,7 +129,6 @@ def job_function3():
     print('-- data --')
     print(data)
 
-
 def start_scheduler():
     scheduler = BackgroundScheduler()
 
@@ -141,7 +140,7 @@ def start_scheduler():
     #scheduler.add_job(job_function2, 'cron', minute='*/1')
 
     # 每小時的20分執行
-    scheduler.add_job(job_function3, 'cron', minute='20')
+    scheduler.add_job(job_function3, 'cron', minute='*/10')
 
     # start the scheduler
     scheduler.start()
